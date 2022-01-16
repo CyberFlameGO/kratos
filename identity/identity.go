@@ -19,8 +19,6 @@ import (
 	"github.com/ory/herodot"
 	"github.com/ory/x/sqlxx"
 
-	"github.com/ory/kratos/driver/config"
-
 	"github.com/gofrs/uuid"
 	"github.com/pkg/errors"
 
@@ -231,10 +229,6 @@ func (i *Identity) CopyWithoutCredentials() *Identity {
 }
 
 func NewIdentity(traitsSchemaID string) *Identity {
-	if traitsSchemaID == "" {
-		traitsSchemaID = config.DefaultIdentityTraitsSchemaID
-	}
-
 	stateChangedAt := sqlxx.NullTime(time.Now())
 	return &Identity{
 		ID:                  x.NewUUID(),

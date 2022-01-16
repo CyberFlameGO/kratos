@@ -366,7 +366,7 @@ func TestHandler(t *testing.T) {
 		for name, ts := range map[string]*httptest.Server{"public": publicTS, "admin": adminTS} {
 			t.Run("endpoint="+name, func(t *testing.T) {
 				// create identity with credentials
-				i := identity.NewIdentity("")
+				i := identity.NewIdentity(config.DefaultIdentityTraitsSchemaID)
 				i.SetCredentials(identity.CredentialsTypePassword, identity.Credentials{
 					Type:   identity.CredentialsTypePassword,
 					Config: sqlxx.JSONRawMessage(`{"secret":"pst"}`),

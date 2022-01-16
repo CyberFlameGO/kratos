@@ -352,6 +352,39 @@ func TestStrategy(t *testing.T) {
 		})
 	})
 
+	t.Run("case=register with a different identity schema ID", func(t *testing.T) {
+		t.Cleanup(func() {
+			testhelpers.SetDefaultIdentitySchema(conf, "file://./stub/registration.schema.json")
+		})
+
+		conf.MustSet(config.ViperKeyDefaultIdentitySchemaID, "not-default")
+		conf.MustSet(config.ViperKeyIdentitySchemas, config.Schemas{
+			{ID: "not-default", URL: "file://./stub/registration.schema.json"},
+		})
+
+		subject = "register-othher-schema@ory.sh"
+		scope = []string{"openid", "offline"}
+
+		expectTokens := func(t *testing.T, provider string, body []byte) {
+			i, err := reg.PrivilegedIdentityPool().GetIdentityConfidential(context.Background(), uuid.FromStringOrNil(gjson.GetBytes(body, "identity.id").String()))
+			require.NoError(t, err)
+			c := i.Credentials[identity.CredentialsTypeOIDC].Config
+			assert.NotEmpty(t, gjson.GetBytes(c, "providers.0.initial_access_token").String())
+			assertx.EqualAsJSONExcept(
+				t,
+				json.RawMessage(fmt.Sprintf(`{"providers": [{"subject":"%s","provider":"%s"}]}`, subject, provider)),
+				json.RawMessage(c),
+				[]string{"providers.0.initial_id_token", "providers.0.initial_access_token", "providers.0.initial_refresh_token"},
+			)
+		}
+
+		r := newRegistrationFlow(t, returnTS.URL, time.Minute)
+		action := afv(t, r.ID, "valid")
+		res, body := makeRequest(t, "valid", action, url.Values{})
+		ai(t, res, body)
+		expectTokens(t, "valid", body)
+	})
+
 	t.Run("case=login without registered account", func(t *testing.T) {
 		subject = "login-without-register@ory.sh"
 		scope = []string{"openid"}

@@ -40,7 +40,7 @@ func TestPersister_CreateIdentityRacy(t *testing.T) {
 				go func() {
 					defer wg.Done()
 
-					id := identity.NewIdentity("")
+					id := identity.NewIdentity(config.DefaultIdentityTraitsSchemaID)
 					id.SetCredentials(identity.CredentialsTypePassword, identity.Credentials{
 						Type:        identity.CredentialsTypePassword,
 						Identifiers: []string{fmt.Sprintf("racy identity %d", ii)},

@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/ory/kratos/driver/config"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -100,7 +101,7 @@ var testBodyJSONNet []byte
 
 func TestJsonNetSupport(t *testing.T) {
 	f := &login.Flow{ID: x.NewUUID()}
-	i := identity.NewIdentity("")
+	i := identity.NewIdentity(config.DefaultIdentityTraitsSchemaID)
 	l := logrusx.New("kratos", "test")
 
 	for _, tc := range []struct {

@@ -86,7 +86,7 @@ func TestPersister(ctx context.Context, conf *config.Config, p interface {
 			})
 
 			t.Run("method=list by identity", func(t *testing.T) {
-				i := identity.NewIdentity("")
+				i := identity.NewIdentity(config.DefaultIdentityTraitsSchemaID)
 				require.NoError(t, p.CreateIdentity(ctx, i))
 				sess := make([]session.Session, 4)
 				for j := range sess {

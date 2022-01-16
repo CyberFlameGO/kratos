@@ -209,7 +209,6 @@ func (p *Persister) CountIdentities(ctx context.Context) (int64, error) {
 
 func (p *Persister) CreateIdentity(ctx context.Context, i *identity.Identity) error {
 	i.NID = corp.ContextualizeNID(ctx, p.nid)
-
 	if i.SchemaID == "" {
 		i.SchemaID = config.DefaultIdentityTraitsSchemaID
 	}

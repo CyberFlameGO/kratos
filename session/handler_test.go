@@ -373,7 +373,7 @@ func TestHandlerAdminSessionManagement(t *testing.T) {
 
 	t.Run("case=should return 202 after invalidating all sessions", func(t *testing.T) {
 		client := testhelpers.NewClientWithCookies(t)
-		i := identity.NewIdentity("")
+		i := identity.NewIdentity(config.DefaultIdentityTraitsSchemaID)
 		require.NoError(t, reg.IdentityManager().Create(ctx, i))
 		s := &Session{Identity: i}
 		require.NoError(t, reg.SessionPersister().UpsertSession(ctx, s))
@@ -434,7 +434,7 @@ func TestHandlerAdminSessionManagement(t *testing.T) {
 
 	t.Run("case=should respect active on list", func(t *testing.T) {
 		client := testhelpers.NewClientWithCookies(t)
-		i := identity.NewIdentity("")
+		i := identity.NewIdentity(config.DefaultIdentityTraitsSchemaID)
 		require.NoError(t, reg.IdentityManager().Create(ctx, i))
 
 		sess := make([]Session, 2)
@@ -511,7 +511,7 @@ func TestHandlerSelfServiceSessionManagement(t *testing.T) {
 
 		setup = func(t *testing.T) (*http.Client, *identity.Identity, *Session) {
 			client := testhelpers.NewClientWithCookies(t)
-			i := identity.NewIdentity("") // the identity is created by the handler
+			i := identity.NewIdentity(config.DefaultIdentityTraitsSchemaID) // the identity is created by the handler
 
 			ident <- i
 			testhelpers.MockHydrateCookieClient(t, client, ts.URL+"/set")

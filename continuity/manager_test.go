@@ -46,7 +46,7 @@ func TestManager(t *testing.T) {
 
 	testhelpers.SetDefaultIdentitySchema(conf, "file://../test/stub/identity/empty.schema.json")
 	conf.MustSet(config.ViperKeyPublicBaseURL, "https://www.ory.sh")
-	i := identity.NewIdentity("")
+	i := identity.NewIdentity(config.DefaultIdentityTraitsSchemaID)
 	require.NoError(t, reg.PrivilegedIdentityPool().CreateIdentity(context.Background(), i))
 
 	var newServer = func(t *testing.T, p continuity.Manager, tc *persisterTestCase) *httptest.Server {
