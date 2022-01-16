@@ -2,6 +2,8 @@ import { APP_URL, appPrefix, gen, website } from '../../../../helpers'
 import { routes as react } from '../../../../helpers/react'
 import { routes as express } from '../../../../helpers/express'
 
+const customSchema = 'customOidcSchema'
+
 context('Social Sign Up Successes', () => {
   ;[
     {
@@ -27,15 +29,16 @@ context('Social Sign Up Successes', () => {
         cy.clearAllCookies()
         cy.visit(registration)
         cy.setIdentitySchema(
-          'file://test/e2e/profiles/oidc/identity.traits.schema.json'
+          'file://test/e2e/profiles/oidc/identity.traits.schema.json',
+          'customOidcSchema'
         )
       })
 
-      const shouldSession = (email) => (session) => {
+      const shouldSession = (email, schemaId) => (session) => {
         const { identity } = session
         expect(identity.id).to.not.be.empty
-        expect(identity.schema_id).to.equal('default')
-        expect(identity.schema_url).to.equal(`${APP_URL}/schemas/default`)
+        expect(identity.schema_id).to.equal(schemaId)
+        expect(identity.schema_url).to.equal(`${APP_URL}/schemas/${schemaId}`)
         expect(identity.traits.website).to.equal(website)
         expect(identity.traits.email).to.equal(email)
       }
@@ -89,7 +92,7 @@ context('Social Sign Up Successes', () => {
         cy.location('pathname').should('not.contain', '/consent')
 
         cy.getSession().should((session) => {
-          shouldSession(email)(session)
+          shouldSession(email,customSchema)(session)
           expect(session.identity.traits.consent).to.equal(true)
         })
       })
@@ -98,7 +101,7 @@ context('Social Sign Up Successes', () => {
         const email = gen.email()
 
         cy.registerOidc({ email, website, route: registration })
-        cy.getSession().should(shouldSession(email))
+        cy.getSession().should(shouldSession(email,customSchema))
       })
 
       it('should be able to convert a sign up flow to a sign in flow', () => {
@@ -114,12 +117,13 @@ context('Social Sign Up Successes', () => {
           expect(path).to.oneOf(['/', '/welcome'])
         })
 
-        cy.getSession().should(shouldSession(email))
+        cy.getSession().should(shouldSession(email,customSchema))
       })
 
       it('should be able to convert a sign in flow to a sign up flow', () => {
         cy.setIdentitySchema(
-          'file://test/e2e/profiles/oidc/identity-required.traits.schema.json'
+          'file://test/e2e/profiles/oidc/identity-required.traits.schema.json',
+        'otherCustomOidcSchema'
         )
 
         const email = gen.email()
@@ -156,7 +160,7 @@ context('Social Sign Up Successes', () => {
 
         cy.location('pathname').should('not.contain', '/registration')
 
-        cy.getSession().should(shouldSession(email))
+        cy.getSession().should(shouldSession(email, 'otherCustomOidcSchema'))
       })
 
       it('should be able to sign up with redirects', () => {

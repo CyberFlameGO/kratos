@@ -438,8 +438,9 @@ declare global {
       /**
        * Set the identity schema
        * @param schema
+       * @param id
        */
-      setIdentitySchema(schema: string): Chainable<void>
+      setIdentitySchema(schema: string, id?: string): Chainable<void>
     }
   }
 }
